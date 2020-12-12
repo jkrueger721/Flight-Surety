@@ -74,7 +74,8 @@ contract FlightSuretyApp {
     *
     */
     constructor
-                                (
+                                ( 
+                                    address _dataContract
                                 ) 
                                 public 
     {
@@ -88,7 +89,6 @@ contract FlightSuretyApp {
 
     function isOperational() 
                             public 
-                            pure 
                             returns(bool) 
     {
         return flightSuretyData.isOperational();  // Modify to call data contract's status
@@ -337,3 +337,4 @@ contract FlightSuretyApp {
 
 // endregion
 
+}

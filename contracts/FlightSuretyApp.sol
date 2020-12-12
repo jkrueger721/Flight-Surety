@@ -5,6 +5,7 @@ pragma solidity >=0.4.25;
 // More info: https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2018/november/smart-contract-insecurity-bad-arithmetic/
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "./FlightSuretyData.sol";
 
 /************************************************** */
 /* FlightSurety Smart Contract                      */
@@ -25,6 +26,7 @@ contract FlightSuretyApp {
     uint8 private constant STATUS_CODE_LATE_OTHER = 50;
 
     address private contractOwner;          // Account used to deploy contract
+    FlightSuretyData flightSuretyData;
 
     struct Flight {
         bool isRegistered;
@@ -77,6 +79,7 @@ contract FlightSuretyApp {
                                 public 
     {
         contractOwner = msg.sender;
+        flightSuretyData = FlightSuretyData(_dataContract);
     }
 
     /********************************************************************************************/
@@ -88,7 +91,7 @@ contract FlightSuretyApp {
                             pure 
                             returns(bool) 
     {
-        return FlightSuretyData.operational;  // Modify to call data contract's status
+        return flightSuretyData.isOperational();  // Modify to call data contract's status
     }
 
     /********************************************************************************************/
@@ -334,19 +337,3 @@ contract FlightSuretyApp {
 
 // endregion
 
-}   
-contract FlightSuretyData {
-    function setOperatingStatus(bool mode, address sender) external {}
-    function isOperational() external view returns(bool) {}
-    function getActiveAirlines() external view returns(address[]){}
-    function registerAirline(address airline, address owner) external {}
-    function fund(address owner) public payable {}
-    function buy(address passenger, string flight) public payable {}
-    function creditInsurees(address passenger, string flight) external payable{}
-
-    function isAirline(address airline) external view returns(bool){}
-    function getAirlineOwnership(address airline) external view returns(uint256){}
-    function registerFlight(address airline, string flightId, uint256 timestamp) external {}
-    function setTestingMode(bool mode) external {}
-    function flightSuretyInfo(address passenger, string flight) external returns(uint256){}
-}

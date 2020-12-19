@@ -8,7 +8,7 @@ contract FlightSuretyData {
     /********************************************************************************************/
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
-
+    mapping(uint256 => address) airlines; 
     address private contractOwner;                                      // Account used to deploy contract
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
 
@@ -100,10 +100,12 @@ contract FlightSuretyData {
     */   
     function registerAirline
                             (   
+                                address airline
                             )
                             external
-                            pure
+                            
     {
+        airlines.push(airline);
     }
 
 

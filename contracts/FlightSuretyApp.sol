@@ -45,7 +45,7 @@ contract FlightSuretyApp {
     // before a function is allowed to be executed.
 
     /**
-    * @dev Modifier that requires the "operational" boolean variable to be "true"
+    * @dev Modifier that requires the "operational" booleanhttps://github.com/jkrueger721/Flight-Surety.git variable to be "true"
     *      This is used on all state changing functions to pause the contract in 
     *      the event there is an issue that needs to be fixed
     */

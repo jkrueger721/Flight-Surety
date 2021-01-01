@@ -38,10 +38,12 @@
     "truffle": "5.0.2",
     "truffle-hdwallet-provider": "1.0.2",
     "web3": "1.2.1",
-    "webpack": "^5.10.3",
-    "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.0",
+    "webpack": "^5.11.1",
+    "webpack-cli": "^4.3.1",
+    "webpack-dev-server": "^3.11.1",
     "webpack-node-externals": "1.7.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "start-server-nestjs-webpack-plugin": "^2.2.5"
+  }
 }

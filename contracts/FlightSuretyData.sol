@@ -1,21 +1,38 @@
 pragma solidity >=0.4.25;
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
-
+import "./FlightSuretyApp.sol";
 contract FlightSuretyData {
     using SafeMath for uint256;
 
     /********************************************************************************************/
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
-    mapping(uint256 => address) airlines; 
+
     address private contractOwner;                                      // Account used to deploy contract
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
+
+    struct Flight {
+        bool isRegistered;
+        uint8 statusCode;
+        uint256 updatedTimestamp;        
+        address airline;
+    }
+    struct Airline { 
+        string name;
+        address account;
+        bool isRegistered;
+        bool isAuthorized;
+        bool operationalVote;
+
+    }
+    mapping(bytes32 => Flight) private flights;
+    mapping(address => Airline) airlines; 
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
-
+    event RegiteredAirline(address airline);
 
     /**
     * @dev Constructor
@@ -99,13 +116,20 @@ contract FlightSuretyData {
     *
     */   
     function registerAirline
-                            (   
+                            (   string name,
                                 address airline
                             )
+                            requireIsOperational
                             external
                             
     {
-        airlines.push(airline);
+          airlines[airline] = Airline({
+                      name: name,
+                      account: airline,
+                      isRegistered: true,
+                      isAuthorized: true,
+                      operationalVote: true
+                      });
     }
 
 

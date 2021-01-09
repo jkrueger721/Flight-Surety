@@ -44,6 +44,15 @@ contract FlightSuretyData {
                                 public 
     {
         contractOwner = msg.sender;
+
+         airlines[contractOwner] = Airline({
+                    name: "Default Name",
+                    account: contractOwner,
+                    isRegistered: true,
+                    isAuthorized: true,
+                    operationalVote: true
+                    });
+        emit RegiteredAirline(contractOwner);
     }
 
     /********************************************************************************************/
@@ -130,6 +139,7 @@ contract FlightSuretyData {
                       isAuthorized: true,
                       operationalVote: true
                       });
+        emit RegiteredAirline(airline);
     }
 
 

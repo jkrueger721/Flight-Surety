@@ -40,6 +40,7 @@ contract FlightSuretyData {
     */
     constructor
                                 (
+                                    
                                 ) 
                                 public 
     {

@@ -20,7 +20,7 @@ contract FlightSuretyApp {
     // Flight status codees
     uint8 private constant STATUS_CODE_UNKNOWN = 0;
     uint8 private constant STATUS_CODE_ON_TIME = 10;
-    uint8 private constant STATUS_CODE_LATE_AIRLINE = 20;
+    uint8 private constant STATUS_CODE_LATE_ASDfgGIRLINE = 20;
     uint8 private constant STATUS_CODE_LATE_WEATHER = 30;
     uint8 private constant STATUS_CODE_LATE_TECHNICAL = 40;
     uint8 private constant STATUS_CODE_LATE_OTHER = 50;
@@ -284,7 +284,7 @@ contract FlightSuretyApp {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
 
-    // Returns array of three non-duplicating integers from 0-9
+    // Returns array of three non-duplicating integers from 0-9wheel of time music    
     function generateIndexes
                             (                       
                                 address account         

@@ -143,7 +143,10 @@ contract FlightSuretyData {
         emit RegiteredAirline(airline);
     }
 
-
+    function isAirline(address airline)returns (bool)
+    {
+        return airlines[airline].isRegistered;
+    }
    /**
     * @dev Buy insurance for a flight
     *

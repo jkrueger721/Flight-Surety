@@ -11,6 +11,7 @@ contract FlightSuretyData {
 
     address private contractOwner;                                      // Account used to deploy contract
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
+    uint256 private authorizedAirlineCount = 0;
 
     struct Flight {
         bool isRegistered;
@@ -24,10 +25,16 @@ contract FlightSuretyData {
         bool isRegistered;
         bool isAuthorized;
         bool operationalVote;
+        
+
+    }
+    struct Insuree{
+        string name;
 
     }
     mapping(bytes32 => Flight) private flights;
     mapping(address => Airline) airlines; 
+    mapping(address => Insuree)private insurees; 
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -38,11 +45,7 @@ contract FlightSuretyData {
     * @dev Constructor
     *      The deploying account becomes contractOwner
     */
-    constructor
-                                (
-                                    
-                                ) 
-                                public 
+    constructor()public 
     {
         contractOwner = msg.sender;
 
@@ -52,7 +55,10 @@ contract FlightSuretyData {
                     isRegistered: true,
                     isAuthorized: true,
                     operationalVote: true
+
                     });
+
+        authorizedAirlineCount = authorizedAirlineCount.add(1);
         emit RegiteredAirline(contractOwner);
     }
 
@@ -133,6 +139,10 @@ contract FlightSuretyData {
                             external
                             
     {
+
+        require(!airlines[airline].isRegistered,"airline need to be registered");
+
+        if(authorizedAirlineCount <= 4){
           airlines[airline] = Airline({
                       name: name,
                       account: airline,
@@ -140,10 +150,14 @@ contract FlightSuretyData {
                       isAuthorized: true,
                       operationalVote: true
                       });
+         authorizedAirlineCount = authorizedAirlineCount.add(1);
+        }
+
+        
         emit RegiteredAirline(airline);
     }
 
-    function isAirline(address airline)returns (bool)
+    function isAirline(address airline)private returns (bool)
     {
         return airlines[airline].isRegistered;
     }

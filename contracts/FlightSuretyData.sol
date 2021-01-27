@@ -32,6 +32,7 @@ contract FlightSuretyData {
         string name;
 
     }
+    mapping(address => uint256) private funding;
     mapping(bytes32 => Flight) private flights;
     mapping(address => Airline) airlines; 
     mapping(address => Insuree)private insurees; 
@@ -211,14 +212,30 @@ contract FlightSuretyData {
     *      resulting in insurance payouts, the contract should be self-sustaining
     *
     */   
-    function fund
-                            (   
+     function fund
+                            (
+                              address airline
                             )
                             public
                             payable
-    {
-    }
+                            requireIsOperational
 
+    {
+        require(msg.value >= 10 ether, "Inadaquate funds");
+        require(airlines[airline].isRegistered, "Sending account must be registered before it can be funded");
+
+
+        uint256 totalAmount = existingAmount.add(msg.value);
+        airline.transfer(msg.value); //their code has the totalAmount being transferred to the contract account. Why?
+
+        if (airlines[airline].isAuthorized == false) {
+            airlines[airline].isAuthorized = true;
+            authorizedAirlineCount = authorizedAirlineCount.add(1);
+            emit AuthorizeAirline(airline);
+        }
+
+
+    }
     function getFlightKey
                         (
                             address airline,
@@ -240,7 +257,7 @@ contract FlightSuretyData {
                             external 
                             payable 
     {
-        fund();
+        fund(msg.sender);
     }
 
 

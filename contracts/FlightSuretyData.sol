@@ -35,6 +35,7 @@ contract FlightSuretyData {
     mapping(bytes32 => Flight) private flights;
     mapping(address => Airline) airlines; 
     mapping(address => Insuree)private insurees; 
+    mapping(address => uint256) private creditBalance;
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -74,6 +75,12 @@ contract FlightSuretyData {
     *      This is used on all state changing functions to pause the contract in 
     *      the event there is an issue that needs to be fixed
     */
+
+    modifier requireIsAuthorized()
+    {
+        require(airlines[msg.sender].isAuthorized, "Airline needs to be authorized");
+        _;
+    }
     modifier requireIsOperational() 
     {
         require(operational, "Contract is currently not operational");
@@ -85,7 +92,7 @@ contract FlightSuretyData {
     */
     modifier requireContractOwner()
     {
-        require(msg.sender == contractOwner, "Caller is not contract owner");
+        require(msg.sender == contractOwner, "Caller is not contract owner ");
         _;
     }
 
@@ -136,6 +143,7 @@ contract FlightSuretyData {
                                 address airline
                             )
                             requireIsOperational
+                            
                             external
                             
     {

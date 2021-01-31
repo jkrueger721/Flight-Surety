@@ -17,7 +17,7 @@ contract FlightSuretyData {
         bool isRegistered;
         uint8 statusCode;
         uint256 updatedTimestamp;        
-        address airline;
+        Airline airline;
     }
     struct Airline { 
         string name;
@@ -30,6 +30,9 @@ contract FlightSuretyData {
     }
     struct Insuree{
         string name;
+        address account;
+        uint256 insuranceAmount;
+        uint256 payout;
 
     }
     mapping(address => uint256) private funding;
@@ -42,6 +45,7 @@ contract FlightSuretyData {
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
     event RegiteredAirline(address airline);
+    event AuthorizedAirline(address airline);
 
     /**
     * @dev Constructor
@@ -225,13 +229,13 @@ contract FlightSuretyData {
         require(airlines[airline].isRegistered, "Sending account must be registered before it can be funded");
 
 
-        uint256 totalAmount = existingAmount.add(msg.value);
+        uint256 totalAmount = totalAmount.add(msg.value);
         airline.transfer(msg.value); //their code has the totalAmount being transferred to the contract account. Why?
 
         if (airlines[airline].isAuthorized == false) {
             airlines[airline].isAuthorized = true;
             authorizedAirlineCount = authorizedAirlineCount.add(1);
-            emit AuthorizeAirline(airline);
+            emit AuthorizedAirline(airline);
         }
 
 

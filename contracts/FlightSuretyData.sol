@@ -12,9 +12,10 @@ contract FlightSuretyData {
     address private contractOwner;                                      // Account used to deploy contract
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
     uint256 private authorizedAirlineCount = 0;
+    uint256 private changeOperatingStatusVotes = 0;
+
 
     struct Flight {
-        bool isRegistered;
         uint8 statusCode;
         uint256 updatedTimestamp;        
         Airline airline;
@@ -29,7 +30,6 @@ contract FlightSuretyData {
 
     }
     struct Insuree{
-        string name;
         address account;
         uint256 insuranceAmount;
         uint256 payout;
@@ -124,16 +124,33 @@ contract FlightSuretyData {
     *
     * When operational mode is disabled, all write transactions except for this one will fail
     */    
-    function setOperatingStatus
+      function setOperatingStatus
                             (
-                                bool mode
-                            ) 
+                                bool mode,
+                                address caller
+                            )
                             external
-                            requireContractOwner 
-    {
-        operational = mode;
-    }
 
+                            requireContractOwner
+
+
+    {
+        require(operational == airlines[caller].operationalVote, "Duplicate caller");
+        require(mode!=operational, "New mode must be different from existing mode");
+
+
+        if (authorizedAirlineCount < 4) {
+          operational = mode;
+        } else { //use multi-party consensus amount authorized airlines to reach 50% aggreement
+          changeOperatingStatusVotes = changeOperatingStatusVotes.add(1);
+          airlines[caller].operationalVote = mode;
+          if (changeOperatingStatusVotes >= (authorizedAirlineCount.div(2))) {
+            operational = mode;
+            changeOperatingStatusVotes = authorizedAirlineCount - changeOperatingStatusVotes;
+          }
+        }
+
+    }
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
@@ -170,7 +187,7 @@ contract FlightSuretyData {
         emit RegiteredAirline(airline);
     }
 
-    function isAirline(address airline)private returns (bool)
+    function isAirline(address airline)public returns (bool)
     {
         return airlines[airline].isRegistered;
     }
@@ -192,10 +209,13 @@ contract FlightSuretyData {
     */
     function creditInsurees
                                 (
+                                   
                                 )
                                 external
                                 pure
+                               
     {
+        
     }
     
 

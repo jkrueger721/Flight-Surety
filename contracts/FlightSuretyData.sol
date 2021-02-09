@@ -13,6 +13,8 @@ contract FlightSuretyData {
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
     uint256 private authorizedAirlineCount = 0;
     uint256 private changeOperatingStatusVotes = 0;
+    address private insuranceAccount;
+    uint256 private insranceBalance = 0;
 
 
     struct Flight {
@@ -46,6 +48,7 @@ contract FlightSuretyData {
     /********************************************************************************************/
     event RegiteredAirline(address airline);
     event AuthorizedAirline(address airline);
+    event BoughtInsurence(address caller, bytes32 key,uint256 amount);
 
     /**
     * @dev Constructor
@@ -170,14 +173,14 @@ contract FlightSuretyData {
                             
     {
 
-        require(!airlines[airline].isRegistered,"airline need to be registered");
+        require(!airlines[airline].isRegistered,"airline cant already be registered");
 
         if(authorizedAirlineCount <= 4){
           airlines[airline] = Airline({
                       name: name,
                       account: airline,
                       isRegistered: true,
-                      isAuthorized: true,
+                      isAuthorized: false,
                       operationalVote: true
                       });
          authorizedAirlineCount = authorizedAirlineCount.add(1);
@@ -196,12 +199,25 @@ contract FlightSuretyData {
     *
     */   
     function buy
-                            (                             
+                            (   address airline,     
+                                address insureeAccount, 
+                                string flight,
+                                uint256 timeStamp,
+                                uint256 amount
+
                             )
+                            requireIsOperational
                             external
                             payable
     {
+        require(insurees[insureeAccount].account == insureeAccount,"need to provide insuree account address");
+        require(amount = msg.value,"amount must equal value sent");
 
+        bytes32 key = getFlightKey(airline, flight, timeStamp);
+        insuranceAccount.transfer(amount);
+        insuranceBalance += amount;
+
+        emit BoughtInsurence(msg.sender, key, amount);
     }
 
     /**
@@ -252,7 +268,7 @@ contract FlightSuretyData {
         uint256 totalAmount = totalAmount.add(msg.value);
         airline.transfer(msg.value); //their code has the totalAmount being transferred to the contract account. Why?
 
-        if (airlines[airline].isAuthorized == false) {
+        if (!airlines[airline].isAuthorized) {
             airlines[airline].isAuthorized = true;
             authorizedAirlineCount = authorizedAirlineCount.add(1);
             emit AuthorizedAirline(airline);

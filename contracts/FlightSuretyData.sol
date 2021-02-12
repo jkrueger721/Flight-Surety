@@ -14,7 +14,7 @@ contract FlightSuretyData {
     uint256 private authorizedAirlineCount = 0;
     uint256 private changeOperatingStatusVotes = 0;
     address private insuranceAccount;
-    uint256 private insranceBalance = 0;
+    uint256 private insuranceBalance = 0;
 
 
     struct Flight {
@@ -34,7 +34,7 @@ contract FlightSuretyData {
     struct Insuree{
         address account;
         uint256 insuranceAmount;
-        uint256 payout;
+        uint256 payoutBalance;
 
     }
     mapping(address => uint256) private funding;
@@ -49,6 +49,9 @@ contract FlightSuretyData {
     event RegiteredAirline(address airline);
     event AuthorizedAirline(address airline);
     event BoughtInsurence(address caller, bytes32 key,uint256 amount);
+    event CreditInsuree(address airline, address insuree, uint256 amount);
+    event PayInsuree(address airline, address insuree, uint256 amount);
+
 
     /**
     * @dev Constructor
@@ -200,7 +203,7 @@ contract FlightSuretyData {
     */   
     function buy
                             (   address airline,     
-                                address insureeAccount, 
+                                address insuree, 
                                 string flight,
                                 uint256 timeStamp,
                                 uint256 amount
@@ -210,11 +213,13 @@ contract FlightSuretyData {
                             external
                             payable
     {
-        require(insurees[insureeAccount].account == insureeAccount,"need to provide insuree account address");
-        require(amount = msg.value,"amount must equal value sent");
+        require(insurees[insuree].account == insuree,"need to provide insuree account address");
+        require(msg.sender == insuree, "insuree calls this function");
+        require(amount == msg.value,"amount must equal value sent");
 
         bytes32 key = getFlightKey(airline, flight, timeStamp);
-        insuranceAccount.transfer(amount);
+        airline.transfer(amount);
+        insurees[insuree].insuranceAmount += amount;
         insuranceBalance += amount;
 
         emit BoughtInsurence(msg.sender, key, amount);
@@ -225,13 +230,19 @@ contract FlightSuretyData {
     */
     function creditInsurees
                                 (
-                                   
+                                   address airline,
+                                   address insuree,
+                                   uint256 creditAmount
                                 )
+                                requireIsOperational
                                 external
-                                pure
+                                
                                
     {
-        
+        require(insurees[insuree].insuranceAmount >= creditAmount);
+
+        insurees[insuree].payoutBalance = creditAmount; 
+        emit CreditInsuree(airline,insuree,creditAmount);
     }
     
 
@@ -240,11 +251,18 @@ contract FlightSuretyData {
      *
     */
     function pay
-                            (
+                            (   
+                                   address airline,
+                                   address insuree,
+                                   uint256 payoutAmount
                             )
+                            requireIsOperational
                             external
-                            pure
+                        
     {
+        require(msg.sender == airline);
+        insurees[insuree].account.transfer(payoutAmount);
+        emit PayInsuree(airline, insuree, payoutAmount);
     }
 
    /**

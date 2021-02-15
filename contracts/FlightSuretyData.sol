@@ -141,8 +141,8 @@ contract FlightSuretyData {
 
 
     {
-        require(operational == airlines[caller].operationalVote, "Duplicate caller");
-        require(mode!=operational, "New mode must be different from existing mode");
+        
+        //require(mode!=operational, "New mode must be different from existing mode");
 
 
         if (authorizedAirlineCount < 4) {

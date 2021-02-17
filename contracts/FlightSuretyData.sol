@@ -132,8 +132,7 @@ contract FlightSuretyData {
     */    
       function setOperatingStatus
                             (
-                                bool mode,
-                                address caller
+                                bool mode
                             )
                             external
 
@@ -142,8 +141,8 @@ contract FlightSuretyData {
 
     {
         
-        //require(mode!=operational, "New mode must be different from existing mode");
 
+       address caller = msg.sender;
 
         if (authorizedAirlineCount < 4) {
           operational = mode;
